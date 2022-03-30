@@ -1,0 +1,5 @@
+lane :test do
+  convert_web_extension(
+    extension: './example/'
+  )
+end
