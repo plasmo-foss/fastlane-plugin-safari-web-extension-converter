@@ -4,7 +4,9 @@
 
 ## Getting Started
 
-This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-safari_web_extension_converter`, add it to your project by running:
+This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. It is a component of [Plasmo Corp's](https://plasmo.com) [Browser Plugin Publisher](https://github.com/plasmo-corp/bpp) for GitHub Actions, the easiest way to publish a cross-platform browser extension. 
+
+To get started add it to your project by running:
 
 ```sh
 fastlane add_plugin safari_web_extension_converter
@@ -14,14 +16,12 @@ fastlane add_plugin safari_web_extension_converter
 
 ## About Safari Web Extension Converter
 
-Uses Apple's `safari-web-extension-converter` via Xcode Command Line tools `xcrun` to convert a Web Extension (i.e. Chrome Extensions) to a Safari Web Extension. This was released alongside Xcode 12 at WWDC 2021 with the session [Meet Safari Web Extensions on iOS](https://developer.apple.com/videos/play/wwdc2021/10104). Supports universal iOS and macOS extensions by default.
+Uses Apple's `safari-web-extension-converter` via Xcode Command Line tools `xcrun` to convert a Web Extension (i.e. Chrome Extensions) to a Safari Web Extension. The CLI this plugin relies on was released alongside Xcode 12 at WWDC 2021 with the session [Meet Safari Web Extensions on iOS](https://developer.apple.com/videos/play/wwdc2021/10104). Supports universal iOS and macOS extensions by default.
 
 `convert-web-extension` is the entrypoint action that takes a path to a Web Extension and generates an Xcode project. 
 
-This plugin is a component of Plasmo's [Browser Plugin Publisher](https://github.com/plasmo-corp/bpp) for GitHub Actions, the easiest way to publish a cross-platform browser extension.
-
 ## Usage
-To get started, try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`. The [example Fastfile](fastlane/Fastfile) describes the plugin usage, and [example](example/) is an example Web Extension. The plugin outputs helpful metadata, like warnings for missing extension features in the Safari environment, and the generated project location.
+To get started, try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`. The [example Fastfile](fastlane/Fastfile) describes the plugin usage, and [example](example/) is an example Web Extension. The plugin outputs helpful metadata, like warnings for missing extension features in the Safari environment, and the generated Xcode project location.
 
 ```ruby
 convert-web-extension(
@@ -32,6 +32,8 @@ convert-web-extension(
   mac_only: true # Optional. Default generates iOS and macOS
 )
 ```
+
+Take it for a spin and Build & Run in Xcode. Follow Apple's guide to test your Web Extension: [Running Your Safari Web Extension](https://developer.apple.com/documentation/safariservices/safari_web_extensions/running_your_safari_web_extension)
 
 ### Parameters
 | Key               | Description |
@@ -48,7 +50,7 @@ convert-web-extension(
 | copy_resources    | Copy the extension files into the generated project. If you don’t specify this parameter, the project references the original extension files. |
 | force             | Overwrite the output directory, if one exists. |
 
-### Output
+### Plugin Output
 ```json
 {
   "warnings": [],
