@@ -18,13 +18,13 @@ fastlane add_plugin safari_web_extension_converter
 
 Uses Apple's `safari-web-extension-converter` via Xcode Command Line tools `xcrun` to convert a Web Extension (i.e. Chrome Extensions) to a Safari Web Extension. The CLI this plugin relies on was released alongside Xcode 12 at WWDC 2021 with the session [Meet Safari Web Extensions on iOS](https://developer.apple.com/videos/play/wwdc2021/10104). Supports universal iOS and macOS extensions by default.
 
-`convert-web-extension` is the entrypoint action that takes a path to a Web Extension and generates an Xcode project. 
+`convert_web_extension` is the entrypoint action that takes a path to a Web Extension and generates an Xcode project. 
 
 ## Usage
 To get started, try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`. The [example Fastfile](fastlane/Fastfile) describes the plugin usage, and [example](example/) is an example Web Extension. The plugin outputs helpful metadata, like warnings for missing extension features in the Safari environment, and the generated Xcode project location.
 
 ```ruby
-convert-web-extension(
+convert_web_extension(
   extension: "<path to extension>",
   app_name: "Sea Creator",  # Optional (inferred from Manifest)
   bundle_identifier: "com.example.apple.Sea-Creator", # Optional (inferred from Manifest)
