@@ -31,22 +31,30 @@ describe Fastlane::Actions::ConvertWebExtensionAction do
           end").runner.execute(:test)
         end.to raise_error("extension not found at specified directory")
       end
-      it "successfully executes xcrun converter with extension" do
-        expect do
-          Fastlane::FastFile.new.parse("
+      context "with proper extension directory" do
+        let(:output) do
+          output = Fastlane::FastFile.new.parse("
           lane :test do
             convert_web_extension(
               extension: '../example/'
             )
           end").runner.execute(:test)
-        end.to raise_error("can't specify both ios_only and mac_only")
+        end
+        it "successfully executes xcrun converter with extension" do
+          expect(output["app_name"]).to eq("Plasmo Mock Browser Extension")
+          expect(output["app_bundle_identifier"]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension")
+          expect(output["platform"]).to eq("All")
+          expect(output["language"]).to eq("Swift")
+        end
       end
     else
       it "aborts if environment is missing xcrun" do
         expect do
           Fastlane::FastFile.new.parse("
           lane :test do
-            convert_web_extension()
+            convert_web_extension(
+              extension: '../example/'
+            )
           end").runner.execute(:test)
         end.to raise_error("xcrun command does not exist")
       end

@@ -4,6 +4,8 @@ require 'open3'
 require_relative '../helper/safari_web_extension_converter_helper'
 
 module Fastlane
+  UI = FastlaneCore::UI unless Fastlane.const_defined?(:UI)
+
   module Actions
     class ConvertWebExtensionAction < Action
       def self.description
@@ -51,35 +53,46 @@ module Fastlane
           "xcrun",
           "safari-web-extension-converter",
           extension,
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("no-prompt"),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("no-open"),
-          Helper::SafariWebExtensionConverterHelper.flag_string("project-location", project_location),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("rebuild-project", rebuild_project),
-          Helper::SafariWebExtensionConverterHelper.flag_string("app-name", app_name),
-          Helper::SafariWebExtensionConverterHelper.flag_string("bundle-identifier", bundle_identifier),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("swift", swift),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("objc", objc),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("ios-only", ios_only),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("mac-only", mac_only),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("copy-resources", copy_resources),
-          Helper::SafariWebExtensionConverterHelper.flag_boolean("force", force)
+          Helper::SafariWebExtensionConverterHelper.flag("no-prompt", boolean: true),
+          Helper::SafariWebExtensionConverterHelper.flag("no-open", boolean: true),
+          Helper::SafariWebExtensionConverterHelper.flag("project-location", value: project_location),
+          Helper::SafariWebExtensionConverterHelper.flag("rebuild-project", boolean: rebuild_project),
+          Helper::SafariWebExtensionConverterHelper.flag("app-name", value: app_name),
+          Helper::SafariWebExtensionConverterHelper.flag("bundle-identifier", value: bundle_identifier),
+          Helper::SafariWebExtensionConverterHelper.flag("swift", boolean: swift),
+          Helper::SafariWebExtensionConverterHelper.flag("objc", boolean: objc),
+          Helper::SafariWebExtensionConverterHelper.flag("ios-only", boolean: ios_only),
+          Helper::SafariWebExtensionConverterHelper.flag("mac-only", boolean: mac_only),
+          Helper::SafariWebExtensionConverterHelper.flag("copy-resources", boolean: copy_resources),
+          Helper::SafariWebExtensionConverterHelper.flag("force", boolean: force)
         ].compact.join(" ")
         stdout, stderr = Open3.capture3(xcrun)
 
+        output = {
+          "warnings" => nil,
+          "project_location" => nil,
+          "app_name" => nil,
+          "app_bundle_identifier" => nil,
+          "platform" => nil,
+          "language" => nil
+        }
+
         if stderr.start_with?("Could not find extension at")
           UI.user_error!("extension not found at specified directory")
-        elsif !stderr.empty?
-          # parse warnings lines
-          # Warning: 
-          UI.crash!(stderr)
-        else
-          # Xcode Project Location: 
-          # App Name: 
-          # App Bundle Identifier: 
-          # Platform: 
-          # Language: 
-          UI.success("Successfully converted extension")
+          return nil
         end
+        unless stderr.empty?
+          output["warnings"] = Helper::SafariWebExtensionConverterHelper.parse(stderr, "Warning")
+        end
+        unless stdout.empty?
+          output["project_location"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Xcode Project Location").first
+          output["app_name"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "App Name").first
+          output["app_bundle_identifier"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "App Bundle Identifier").first
+          output["platform"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Platform").first
+          output["language"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Language").first
+        end
+        
+        return output
       end
 
       def self.available_options
