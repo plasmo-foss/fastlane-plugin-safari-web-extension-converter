@@ -6,18 +6,20 @@
 
 This project is a [_fastlane_](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-safari_web_extension_converter`, add it to your project by running:
 
-```bash
+```sh
 fastlane add_plugin safari_web_extension_converter
 ```
 
+*Requires macOS, Xcode 12 or greater, and Xcode Command Line tools.*
+
 ## About Safari Web Extension Converter
 
-Uses Apple's `safari-web-extension-converter` via xcrun to convert an extension to a Safari Web Extension
+Uses Apple's `safari-web-extension-converter` via Xcode Command Line Tools `xcrun` to convert an extension to a Safari Web Extension
 
 `convert-web-extension` is the entrypoint action that takes a path to an Web Extension and generates an Xcode project. 
 
 ## Usage
-To get started,
+To get started, try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`. The [example `Fastfile`](fastlane/Fastfile) describes the plugin usage, and [`example`](example/) is an example Web Extension. The plugin outputs helpful metadata, like warnings for missing extension features in the Safari environment, and the generated project location.
 
 ```ruby
 convert-web-extension(
@@ -44,22 +46,34 @@ convert-web-extension(
 | copy_resources    | Copy the extension files into the generated project. If you don’t specify this parameter, the project references the original extension files. |
 | force             | Overwrite the output directory, if one exists. |
 
-## Example
-
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
+### Output
+```json
+{
+  "warnings" => [],
+  "project_location" => "<generated project dir>",
+  "app_name" => "App Name",
+  "app_bundle_identifier" => "com.example.app-name.extension",
+  "platform" => "All",
+  "language" => "Swift"
+}
+```
 
 ## Run tests for this plugin
 
 To run both the tests, and code style validation, run
 
-```
+```sh
 rake
 ```
 
-To automatically fix many of the styling issues, use
-```
-rubocop -a
-```
+## Internals
+
+The plugin validates user input and checks if `xcrun` is available in the environment. `Open3.capture3(xcrun)` in the `self.run` [entrypoint](lib/fastlane/plugin/safari_web_extension_converter/actions/convert_web_extension_action.rb) is responsible for the heavy lifting by spawning an `xcrun` instance, collecting stdout and stderr. Output is parsed for generative metadata and warnings.
+
+- the [action](lib/fastlane/plugin/safari_web_extension_converter/actions/convert_web_extension_action.rb) is the plugin entrypoint
+- the [helper](lib/fastlane/plugin/safari_web_extension_converter/helper/safari_web_extension_converter_helper.rb) includes helper functions, like output parsing
+- version is maintained in [version.rb](lib/fastlane/plugin/safari_web_extension_converter/version.rb)
+- a [spec action](spec/safari_web_extension_converter_action_spec.rb) executes RSpec tests using a top-level Fastlane lane
 
 ## Troubleshooting
 
