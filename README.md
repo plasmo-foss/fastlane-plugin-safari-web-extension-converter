@@ -71,7 +71,7 @@ rake
 
 ## Internals
 
-The plugin validates user input and checks if `xcrun` is available in the environment. `Open3.capture3(xcrun)` is the `self.run` [entrypoint](lib/fastlane/plugin/safari_web_extension_converter/actions/convert_web_extension_action.rb) is responsible for the heavy lifting by spawning an `xcrun` instance, collecting stdout and stderr. Output is parsed for generative metadata and warnings.
+The plugin validates user input and checks if `xcrun` is available in the environment. `Open3.capture3(xcrun)` is the `self.run` [entrypoint](lib/fastlane/plugin/safari_web_extension_converter/actions/convert_web_extension_action.rb) responsible for the heavy lifting by spawning an `xcrun` instance, and collecting stdout and stderr. Output is parsed for generative metadata and warnings.
 
 - the [action](lib/fastlane/plugin/safari_web_extension_converter/actions/convert_web_extension_action.rb) is the plugin entrypoint
 - the [helper](lib/fastlane/plugin/safari_web_extension_converter/helper/safari_web_extension_converter_helper.rb) includes helper functions, like output parsing
