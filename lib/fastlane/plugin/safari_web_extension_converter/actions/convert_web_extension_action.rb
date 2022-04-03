@@ -66,6 +66,7 @@ module Fastlane
           Helper::SafariWebExtensionConverterHelper.flag("copy-resources", boolean: copy_resources),
           Helper::SafariWebExtensionConverterHelper.flag("force", boolean: force)
         ].compact.join(" ")
+        UI.message("Running safari-web-extension-converter")
         stdout, stderr = Open3.capture3(xcrun)
 
         output = {
@@ -82,7 +83,9 @@ module Fastlane
           return nil
         end
         unless stderr.empty?
-          output["warnings"] = Helper::SafariWebExtensionConverterHelper.parse(stderr, "Warning")
+          warnings = Helper::SafariWebExtensionConverterHelper.parse(stderr, "Warning")
+          UI.message("#{warnings.count} extension conversion warnings detected")
+          output["warnings"] = warnings
         end
         unless stdout.empty?
           output["project_location"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Xcode Project Location").first
@@ -92,6 +95,7 @@ module Fastlane
           output["language"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Language").first
         end
         
+        UI.message("Successfully generated Xcode project")
         return output
       end
 
