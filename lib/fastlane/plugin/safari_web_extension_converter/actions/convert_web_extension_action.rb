@@ -1,7 +1,5 @@
-require 'fastlane/action'
 require 'fastlane_core/ui/ui'
 require 'open3'
-require_relative '../helper/safari_web_extension_converter_helper'
 
 module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?(:UI)
@@ -16,56 +14,35 @@ module Fastlane
         ["Plasmo Corp."]
       end
 
-      def self.run(params)
-        extension = params[:extension]
-        project_location = params[:project_location]
-        rebuild_project = params[:rebuild_project]
-        app_name = params[:app_name]
-        bundle_identifier = params[:bundle_identifier]
-        swift = params[:swift]
-        objc = params[:objc]
-        ios_only = params[:ios_only]
-        mac_only = params[:mac_only]
-        copy_resources = params[:copy_resources]
-        force = params[:force]
-
-        unless system("command -v xcrun > /dev/null") # hide xcrun output
-          UI.abort_with_message!("xcrun command does not exist")
-          return
-        end
-
-        if extension.nil?
+      def self.validate_input(params)
+        if params[:extension].nil?
           UI.user_error!("no extension param specified")
           return
         end
 
-        if swift && objc
+        if params[:swift] && params[:objc]
           UI.user_error!("can't specify both swift and objc")
           return
         end
 
-        if ios_only && mac_only
+        if params[:ios_only] && params[:mac_only]
           UI.user_error!("can't specify both ios_only and mac_only")
           return
         end
+        return true # input valid
+      end
 
-        xcrun = [
-          "xcrun",
-          "safari-web-extension-converter",
-          extension,
-          Helper::SafariWebExtensionConverterHelper.flag("no-prompt", boolean: true),
-          Helper::SafariWebExtensionConverterHelper.flag("no-open", boolean: true),
-          Helper::SafariWebExtensionConverterHelper.flag("project-location", value: project_location),
-          Helper::SafariWebExtensionConverterHelper.flag("rebuild-project", boolean: rebuild_project),
-          Helper::SafariWebExtensionConverterHelper.flag("app-name", value: app_name),
-          Helper::SafariWebExtensionConverterHelper.flag("bundle-identifier", value: bundle_identifier),
-          Helper::SafariWebExtensionConverterHelper.flag("swift", boolean: swift),
-          Helper::SafariWebExtensionConverterHelper.flag("objc", boolean: objc),
-          Helper::SafariWebExtensionConverterHelper.flag("ios-only", boolean: ios_only),
-          Helper::SafariWebExtensionConverterHelper.flag("mac-only", boolean: mac_only),
-          Helper::SafariWebExtensionConverterHelper.flag("copy-resources", boolean: copy_resources),
-          Helper::SafariWebExtensionConverterHelper.flag("force", boolean: force)
-        ].compact.join(" ")
+      def self.run(params)
+        unless self.validate_input(params)
+          return # failed validation
+        end
+
+        unless system("command -v xcrun > /dev/null") # hide xcrun output
+          UI.abort_with_message!("xcrun command does not exist")
+          return # xcrun not found
+        end
+
+        xcrun = Helper::SafariWebExtensionConverterHelper.generate_command(params)
         UI.message("Running safari-web-extension-converter")
         stdout, stderr = Open3.capture3(xcrun)
 
@@ -94,7 +71,6 @@ module Fastlane
           output["platform"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Platform").first
           output["language"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Language").first
         end
-        
         UI.message("Successfully generated Xcode project")
         return output
       end

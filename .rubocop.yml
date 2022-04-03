@@ -5,6 +5,7 @@ require:
 AllCops:
   TargetRubyVersion: 2.5
   NewCops: enable
+  SuggestExtensions: false
   Include:
   - "**/*.rb"
   - "**/*file"
@@ -66,6 +67,7 @@ Require/MissingRequireStatement:
   - "**/Rakefile"
   - fastlane/**/*
   - supply/**/*
+  - lib/fastlane/plugin/safari_web_extension_converter/actions/**
 Layout/FirstHashElementIndentation:
   Enabled: false
 Layout/HashAlignment:
