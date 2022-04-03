@@ -29,7 +29,7 @@ module Fastlane
         copy_resources = params[:copy_resources]
         force = params[:force]
 
-        unless system("command -v xcrun")
+        unless system("command -v xcrun > /dev/null") # hide xcrun output
           UI.abort_with_message!("xcrun command does not exist")
           return
         end
