@@ -5,6 +5,15 @@ module Fastlane
   UI = FastlaneCore::UI unless Fastlane.const_defined?(:UI)
 
   module Actions
+    module SharedValues
+      CWE_WARNINGS = :CWE_WARNINGS
+      CWE_PROJECT_LOCATION = :CWE_PROJECT_LOCATION
+      CWE_APP_NAME = :CWE_APP_NAME
+      CWE_APP_BUNDLE_IDENTIFIER = :CWE_APP_BUNDLE_IDENTIFIER
+      CWE_PLATFORM = :CWE_PLATFORM
+      CWE_LANGUAGE = :CWE_LANGUAGE
+    end
+
     class ConvertWebExtensionAction < Action
       def self.description
         "Uses Apple's safari-web-extension-converter via xcrun to convert an extension to a Safari Web Extension"
@@ -30,6 +39,10 @@ module Fastlane
           return
         end
         return true # input valid
+      end
+
+      def self.parse_output(output, param)
+        return Helper::SafariWebExtensionConverterHelper.parse(output, param)
       end
 
       def self.run(params)
@@ -60,16 +73,32 @@ module Fastlane
           return nil
         end
         unless stderr.empty?
-          warnings = Helper::SafariWebExtensionConverterHelper.parse(stderr, "Warning")
+          warnings = self.parse_output(stderr, "Warning")
           UI.message("#{warnings.count} extension conversion warnings detected")
+          Actions.lane_context[SharedValues::CWE_WARNINGS] = warnings
           output["warnings"] = warnings
         end
         unless stdout.empty?
-          output["project_location"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Xcode Project Location").first
-          output["app_name"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "App Name").first
-          output["app_bundle_identifier"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "App Bundle Identifier").first
-          output["platform"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Platform").first
-          output["language"] = Helper::SafariWebExtensionConverterHelper.parse(stdout, "Language").first
+          # Parse individual output keys
+          project_location = self.parse_output(stdout, "Xcode Project Location").first
+          app_name = self.parse_output(stdout, "App Name").first
+          app_bundle_identifier = self.parse_output(stdout, "App Bundle Identifier").first
+          platform = self.parse_output(stdout, "Platform").first
+          language = self.parse_output(stdout, "Language").first
+
+          # Set lane context variables
+          Actions.lane_context[SharedValues::CWE_PROJECT_LOCATION] = project_location
+          Actions.lane_context[SharedValues::CWE_APP_NAME] = app_name
+          Actions.lane_context[SharedValues::CWE_APP_BUNDLE_IDENTIFIER] = app_bundle_identifier
+          Actions.lane_context[SharedValues::CWE_PLATFORM] = platform
+          Actions.lane_context[SharedValues::CWE_LANGUAGE] = language
+
+          # Set output dictionary
+          output["project_location"] = project_location
+          output["app_name"] = app_name
+          output["app_bundle_identifier"] = app_bundle_identifier
+          output["platform"] = platform
+          output["language"] = language
         end
         UI.message("Successfully generated Xcode project")
         return output

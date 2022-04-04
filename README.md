@@ -62,6 +62,17 @@ Take it for a spin and Build & Run in Xcode. Follow Apple's guide to test your W
 }
 ```
 
+### Lane Context
+See the documentation about SharedValues and [Lane Context](https://docs.fastlane.tools/advanced/lanes/#Lane%20Context) for more information
+| Key                       | Output Equivalent     |
+| ------------------------- | --------------------- |
+| CWE_WARNINGS              | warnings              |
+| CWE_PROJECT_LOCATION      | project_location      |
+| CWE_APP_NAME              | app_name              |
+| CWE_APP_BUNDLE_IDENTIFIER | app_bundle_identifier |
+| CWE_PLATFORM              | platform              |
+| CWE_LANGUAGE              | language              |
+
 ## Run tests for this plugin
 
 To run both the tests, and code style validation, run
