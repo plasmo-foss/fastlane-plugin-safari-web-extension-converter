@@ -1,5 +1,6 @@
 lane :test do
-  convert_web_extension(
+  output = convert_web_extension(
     extension: './example/'
   )
+  puts output
 end

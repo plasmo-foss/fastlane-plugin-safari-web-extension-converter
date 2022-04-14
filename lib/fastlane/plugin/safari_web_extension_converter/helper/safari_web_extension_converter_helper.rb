@@ -1,4 +1,5 @@
 require 'fastlane_core/ui/ui'
+require 'xcodeproj'
 
 module Fastlane
   module Helper
@@ -27,6 +28,14 @@ module Fastlane
       def self.flag(flag, value: nil, boolean: false)
         if boolean then return "--#{flag}" end
         unless !value || value.empty? then return "--#{flag} #{value}" end
+      end
+
+      def self.share_schemes(path)
+        xcproj = Xcodeproj::Project.open(path)
+        visible = true
+        shared = true
+        xcproj.recreate_user_schemes(visible, shared)
+        xcproj.save
       end
 
       private_class_method :flag

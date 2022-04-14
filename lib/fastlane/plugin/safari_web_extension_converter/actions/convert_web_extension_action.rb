@@ -86,6 +86,9 @@ module Fastlane
           platform = self.parse_output(stdout, "Platform").first
           language = self.parse_output(stdout, "Language").first
 
+          # Repair project_location path
+          project_location = "#{project_location}/#{app_name}"
+
           # Set lane context variables
           Actions.lane_context[SharedValues::CWE_PROJECT_LOCATION] = project_location
           Actions.lane_context[SharedValues::CWE_APP_NAME] = app_name
@@ -100,6 +103,10 @@ module Fastlane
           output["platform"] = platform
           output["language"] = language
         end
+
+        # Recreating and sharing schemes; mimicking Xcode's UI behavior
+        Helper::SafariWebExtensionConverterHelper.share_schemes("#{project_location}/#{app_name}.xcodeproj")
+
         UI.message("Successfully generated Xcode project")
         return output
       end

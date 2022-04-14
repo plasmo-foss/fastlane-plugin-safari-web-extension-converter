@@ -77,7 +77,7 @@ See the documentation about SharedValues and [Lane Context](https://docs.fastlan
 
 To run both the tests, and code style validation, run
 ```sh
-rake
+bundle exec rake
 ```
 
 ## Internals
