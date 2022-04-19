@@ -53,6 +53,7 @@ describe Fastlane::Actions::ConvertWebExtensionAction do
               CWE_PROJECT_LOCATION: Actions.lane_context[Actions::SharedValues::CWE_PROJECT_LOCATION],
               CWE_APP_NAME: Actions.lane_context[Actions::SharedValues::CWE_APP_NAME],
               CWE_APP_BUNDLE_IDENTIFIER: Actions.lane_context[Actions::SharedValues::CWE_APP_BUNDLE_IDENTIFIER],
+              CWE_APP_EXTENSION_BUNDLE_IDENTIFIER: Actions.lane_context[Actions::SharedValues::CWE_APP_EXTENSION_BUNDLE_IDENTIFIER],
               CWE_PLATFORM: Actions.lane_context[Actions::SharedValues::CWE_PLATFORM],
               CWE_LANGUAGE: Actions.lane_context[Actions::SharedValues::CWE_LANGUAGE],
             }
@@ -62,14 +63,34 @@ describe Fastlane::Actions::ConvertWebExtensionAction do
         it "successfully executes xcrun converter with extension" do
           expect(output[0]["app_name"]).to eq("Plasmo Mock Browser Extension")
           expect(output[0]["app_bundle_identifier"]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension")
+          expect(output[0]["app_extension_bundle_identifier"]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension.extension")
           expect(output[0]["platform"]).to eq("All")
           expect(output[0]["language"]).to eq("Swift")
         end
         it "lane context output is correct" do
           expect(output[1][:CWE_APP_NAME]).to eq("Plasmo Mock Browser Extension")
           expect(output[1][:CWE_APP_BUNDLE_IDENTIFIER]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension")
+          expect(output[1][:CWE_APP_EXTENSION_BUNDLE_IDENTIFIER]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension.extension")
           expect(output[1][:CWE_PLATFORM]).to eq("All")
           expect(output[1][:CWE_LANGUAGE]).to eq("Swift")
+        end
+      end
+      context "with custom metadata" do
+        let(:output) do
+          output = Fastlane::FastFile.new.parse("
+          lane :test do
+            returned = convert_web_extension(
+              extension: '../example/',
+              app_name: 'Plasmo Mock',
+              bundle_identifier: 'com.plasmo.mock',
+              extension_bundle_identifier: 'com.plasmo.mock.extension'
+            )
+          end").runner.execute(:test)
+        end
+        it "successfully executes xcrun converter with custom metadata" do
+          expect(output["app_name"]).to eq("Plasmo Mock")
+          expect(output["app_bundle_identifier"]).to eq("com.plasmo.mock")
+          expect(output["app_extension_bundle_identifier"]).to eq("com.plasmo.mock.extension")
         end
       end
     else

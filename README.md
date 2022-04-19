@@ -42,7 +42,8 @@ Take it for a spin and Build & Run in Xcode. Follow Apple's guide to test your W
 | project_location  | Save the generated app and Xcode project to the file path. |
 | rebuild_project   | Rebuild the existing Safari web extension Xcode project at the file path with different options or platforms. Use this option to add iOS to your existing macOS project. |
 | app_name          | Use the value to name the generated app and the Xcode project. |
-| bundle_identifier | Use the value as the bundle identifier for the generated app. This identifier is unique to your app in your developer account. A reverse-DNS-style identifier is recommended (for example, com.company.extensionName). |
+| bundle_identifier | Use the value as the bundle identifier for the generated app. This identifier is unique to your app in your developer account. A reverse-DNS-style identifier is recommended (for example, com.company.app-name). |
+| extension_bundle_identifier | Use the value as the extension bundle identifier for the generated extension target. By default, this is com.company.app-name.extension |
 | swift             | Use Swift in the generated app. |
 | objc              | Use Objective-C in the generated app. |
 | ios_only          | Create an iOS only project. |
@@ -56,7 +57,8 @@ Take it for a spin and Build & Run in Xcode. Follow Apple's guide to test your W
   "warnings": [],
   "project_location": "<generated project dir>",
   "app_name": "App Name",
-  "app_bundle_identifier": "com.example.app-name.extension",
+  "app_bundle_identifier": "com.company.app-name",
+  "app_extension_bundle_identifier": "com.company.app-name.extension",
   "platform": "All",
   "language": "Swift"
 }
@@ -64,14 +66,15 @@ Take it for a spin and Build & Run in Xcode. Follow Apple's guide to test your W
 
 ### Lane Context
 See the documentation about SharedValues and [Lane Context](https://docs.fastlane.tools/advanced/lanes/#Lane%20Context) for more information
-| Key                       | Output Equivalent     |
-| ------------------------- | --------------------- |
-| CWE_WARNINGS              | warnings              |
-| CWE_PROJECT_LOCATION      | project_location      |
-| CWE_APP_NAME              | app_name              |
-| CWE_APP_BUNDLE_IDENTIFIER | app_bundle_identifier |
-| CWE_PLATFORM              | platform              |
-| CWE_LANGUAGE              | language              |
+| Key                                 | Output Equivalent               |
+| ----------------------------------- | ------------------------------- |
+| CWE_WARNINGS                        | warnings                        |
+| CWE_PROJECT_LOCATION                | project_location                |
+| CWE_APP_NAME                        | app_name                        |
+| CWE_APP_BUNDLE_IDENTIFIER           | app_bundle_identifier           |
+| CWE_APP_EXTENSION_BUNDLE_IDENTIFIER | app_extension_bundle_identifier |
+| CWE_PLATFORM                        | platform                        |
+| CWE_LANGUAGE                        | language                        |
 
 ## Run tests for this plugin
 

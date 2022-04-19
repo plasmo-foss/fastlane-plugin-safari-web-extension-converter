@@ -8,9 +8,13 @@ Gemfile.lock
 /rdoc/
 fastlane/README.md
 fastlane/report.xml
-fastlane/Plasmo Mock Browser Extension
 coverage
 test-results
 .DS_Store
 vendor/
 .bundle/
+
+# Generated projects
+fastlane/Plasmo Mock Browser Extension
+fastlane/Plasmo Mock
+Plasmo Mock

@@ -1,6 +1,11 @@
 lane :test do
   output = convert_web_extension(
-    extension: './example/'
+    extension: './example/',
+    app_name: 'Plasmo Mock',
+    bundle_identifier: 'com.plasmo.mock',
+    extension_bundle_identifier: 'com.plasmo.mock.extension',
+    objc: true,
+    force: true
   )
   puts output
 end

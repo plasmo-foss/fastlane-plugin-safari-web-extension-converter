@@ -10,6 +10,7 @@ module Fastlane
       CWE_PROJECT_LOCATION = :CWE_PROJECT_LOCATION
       CWE_APP_NAME = :CWE_APP_NAME
       CWE_APP_BUNDLE_IDENTIFIER = :CWE_APP_BUNDLE_IDENTIFIER
+      CWE_APP_EXTENSION_BUNDLE_IDENTIFIER = :CWE_APP_EXTENSION_BUNDLE_IDENTIFIER
       CWE_PLATFORM = :CWE_PLATFORM
       CWE_LANGUAGE = :CWE_LANGUAGE
     end
@@ -86,6 +87,9 @@ module Fastlane
           platform = self.parse_output(stdout, "Platform").first
           language = self.parse_output(stdout, "Language").first
 
+          # User supplied or generated Extension bundle_id
+          app_extension_bundle_identifier = params[:extension_bundle_identifier] || "#{app_bundle_identifier}.extension"
+
           # Repair project_location path
           project_location = "#{project_location}/#{app_name}"
 
@@ -93,6 +97,7 @@ module Fastlane
           Actions.lane_context[SharedValues::CWE_PROJECT_LOCATION] = project_location
           Actions.lane_context[SharedValues::CWE_APP_NAME] = app_name
           Actions.lane_context[SharedValues::CWE_APP_BUNDLE_IDENTIFIER] = app_bundle_identifier
+          Actions.lane_context[SharedValues::CWE_APP_EXTENSION_BUNDLE_IDENTIFIER] = app_extension_bundle_identifier
           Actions.lane_context[SharedValues::CWE_PLATFORM] = platform
           Actions.lane_context[SharedValues::CWE_LANGUAGE] = language
 
@@ -100,12 +105,19 @@ module Fastlane
           output["project_location"] = project_location
           output["app_name"] = app_name
           output["app_bundle_identifier"] = app_bundle_identifier
+          output["app_extension_bundle_identifier"] = app_extension_bundle_identifier
           output["platform"] = platform
           output["language"] = language
         end
 
-        # Recreating and sharing schemes; mimicking Xcode's UI behavior
-        Helper::SafariWebExtensionConverterHelper.share_schemes("#{project_location}/#{app_name}.xcodeproj")
+        # Fixing the generated Xcode project to meet the spec
+        Helper::SafariWebExtensionConverterHelper.tweak_xcodeproj(
+          project_location,
+          "#{project_location}/#{app_name}.xcodeproj",
+          app_name,
+          app_bundle_identifier,
+          app_extension_bundle_identifier
+        )
 
         UI.message("Successfully generated Xcode project")
         return output
@@ -130,13 +142,17 @@ module Fastlane
                                        optional: true,
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :bundle_identifier,
-                                       description: "Use the value as the bundle identifier for the generated app. This identifier is unique to your app in your developer account. A reverse-DNS-style identifier is recommended (for example, com.company.extensionName)",
+                                       description: "Use the value as the bundle identifier for the generated host app. This identifier is unique to your app in your developer account. A reverse-DNS-style identifier is recommended (for example, com.company.app-name)",
+                                       optional: true,
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :extension_bundle_identifier,
+                                       description: "Use the value as the extension bundle identifier for the generated extension target. By default, this is com.company.app-name.extension",
                                        optional: true,
                                        type: String),
           FastlaneCore::ConfigItem.new(key: :swift,
                                        description: "Use Swift in the generated app",
                                        optional: true,
-                                       default_value: true,
+                                       default_value: false,
                                        is_string: false),
           FastlaneCore::ConfigItem.new(key: :objc,
                                        description: "Use Objective-C in the generated app",
@@ -151,7 +167,7 @@ module Fastlane
                                        optional: true,
                                        is_string: false),
           FastlaneCore::ConfigItem.new(key: :copy_resources,
-                                       description: "Copy the extension files into the generated project. If you don’t specify this parameter, the project references the original extension files",
+                                       description: "Copy the extension files into the generated project. If you dont specify this parameter, the project references the original extension files",
                                        optional: true,
                                        is_string: false),
           FastlaneCore::ConfigItem.new(key: :force,
