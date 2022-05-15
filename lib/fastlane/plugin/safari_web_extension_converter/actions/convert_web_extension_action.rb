@@ -73,6 +73,10 @@ module Fastlane
           UI.user_error!("extension not found at specified directory")
           return nil
         end
+        if stderr.start_with?("Unable to parse manifest.json at")
+          UI.user_error!("extension manifest.json is invalid")
+          return nil
+        end
         unless stderr.empty?
           warnings = self.parse_output(stderr, "Warning")
           UI.message("#{warnings.count} extension conversion warnings detected")
