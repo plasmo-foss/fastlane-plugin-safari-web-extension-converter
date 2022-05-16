@@ -66,6 +66,7 @@ describe Fastlane::Actions::ConvertWebExtensionAction do
           expect(output[0]["app_extension_bundle_identifier"]).to eq("com.yourCompany.Plasmo-Mock-Browser-Extension.extension")
           expect(output[0]["platform"]).to eq("All")
           expect(output[0]["language"]).to eq("Swift")
+          expect(output[0]["warnings"]).not_to be_nil
         end
         it "lane context output is correct" do
           expect(output[1][:CWE_APP_NAME]).to eq("Plasmo Mock Browser Extension")

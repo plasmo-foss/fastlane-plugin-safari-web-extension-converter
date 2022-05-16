@@ -81,7 +81,7 @@ module Fastlane
         end
       end
 
-      def self.parse(output, param)
+      def self.parse(output = "", param)
         prefix = "#{param}: "
         return output.split("\n")
                      .chunk { |i| i.match?(/^[\w\s]+:\s/) } # begins with param like `Warning:`

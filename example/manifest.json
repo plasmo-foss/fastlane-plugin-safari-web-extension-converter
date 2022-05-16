@@ -8,9 +8,9 @@
     "128": "assets/icon128.png"
   },
   "author": "PlasmoCorp",
-  "permissions": [],
   "background": {
-    "scripts": ["background/index.js"]
+    "scripts": ["background/index.js"],
+    "persistent": false
   },
-  "version": "0.0.1"
+  "version": "0.0.9"
 }
