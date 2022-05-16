@@ -83,12 +83,13 @@ module Fastlane
 
       def self.parse(output = "", param)
         prefix = "#{param}: "
-        results = output.split("\n")
-                        .chunk { |i| i.match?(/^[\w\s]+:\s/) } # begins with param like `Warning:`
-                        .reduce([]) { |arr, i| merge_chunks(arr, i) } # flattens multiline messages and multiple params
-                        .select { |i| i.start_with?(prefix) }
-                        .map { |i| i.delete_prefix(prefix) }
-        return results || []
+        return Array(
+          output.split("\n")
+                .chunk { |i| i.match?(/^[\w\s]+:\s/) } # begins with param like `Warning:`
+                .reduce([]) { |arr, i| merge_chunks(arr, i) } # flattens multiline messages and multiple params
+                .select { |i| i.start_with?(prefix) }
+                .map { |i| i.delete_prefix(prefix) }
+        )
       end
 
       def self.merge_chunks(arr, chunk)
