@@ -78,7 +78,7 @@ module Fastlane
           return nil
         end
         unless stderr.empty?
-          warnings = self.parse_output(stderr, "Warning")
+          warnings = self.parse_output(stderr, "Warning") || []
           UI.message("#{warnings.count} extension conversion warnings detected")
           Actions.lane_context[SharedValues::CWE_WARNINGS] = warnings
           output["warnings"] = warnings
